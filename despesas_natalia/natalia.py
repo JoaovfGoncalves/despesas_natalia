@@ -27,7 +27,7 @@ def remover_despesa():
         print('Que despesa você gostaria de remover, Natalia?')
         try:
             print('Insira o número ao lado do "#" da despesa que você deseja remover.')
-            despesa_removida = int(input('> '))-1
+            despesa_removida = int(input('>> '))-1
             del despesas[despesa_removida]
             print('Despesa removida com sucesso.')
             break
@@ -35,9 +35,9 @@ def remover_despesa():
             print('Comando inválido. Tente novamente.')
 
 
-def atualizar_despesa(despesa_atualizada, valor_atualizado, categoria_atualizada):
+def atualizar_despesa(despesa_atualizada, valor_atualizado, categoria_atualizada, item_atualizado, data_atualizada):
     despesas[despesa_atualizada] = {
-        'valor': valor_atualizado, 'categoria': categoria_atualizada}
+        'valor': valor_atualizado, 'categoria': categoria_atualizada, 'item': item_atualizado, 'data': data_atualizada}
 
 
 def tratativa_valor(valor):
@@ -71,28 +71,28 @@ if login == 'a' and senha == 'b':
         mostrar_menu()
         opcao_escolhida = input('>> ')
         if opcao_escolhida == '1':
-            print('De quanto foi a despesa?')
+            print('Insira o valor da despesa:')
             while True:
                 try:
                     valor = tratativa_valor(input('>>R$ '))
                     break
                 except:
                     print('Comando inválido. Tente novamente.')
-            print('Em que categoria se encontra essa despesa?')
+            print('Insira a categoria da despesa:')
             while True:
                 try:
                     categoria = tratativa_texto(input('>> ').capitalize())
                     break
                 except:
                     print('Comando inválido. Tente novamente.')
-            print('Insira o item:')
+            print('Insira o item da despesa:')
             while True:
                 try:
                     item = tratativa_texto(input('>> ').capitalize())
                     break
                 except:
                     print('Comando inválido. Tente novamente.')
-            print('Insira a data da compra:')
+            print('Insira a data da despesa:')
             while True:
                 try:
                     data = tratativa_texto(input('>> '))
@@ -104,27 +104,81 @@ if login == 'a' and senha == 'b':
         elif opcao_escolhida == '2':
             remover_despesa()
         elif opcao_escolhida == '3':
+            lista_despesas()
+            print('Que despesa você gostaria de atualizar, Natalia?')
             while True:
-                lista_despesas()
-                print('Que despesa você gostaria de atualizar, Natalia?')
                 try:
                     despesa_atualizada = int(input(
-                        'Insira o número ao lado do "#" da despesa que você deseja atualizar.\n> '))-1
-                    valor_atualizado = tratativa_valor(
-                        input('Qual é o valor atualizado?\n> '))
-                    alterar_nome_item = input(
-                        'Deseja alterar o nome do item?\n[S]\[N]\n> ').upper()
-                    if alterar_nome_item == 'S':
-                        categoria_atualizada = tratativa_texto(
-                            input('Digite o novo nome do item:\n> '))
-                    else:
-                        categoria_atualizada = despesas[despesa_atualizada].get(
-                            'categoria')
-                    atualizar_despesa(despesa_atualizada,
-                                      valor_atualizado, categoria_atualizada)
+                        'Insira o número ao lado do "#" da despesa que você deseja atualizar.\n>> '))-1
                     break
                 except:
                     print('Comando inválido. Tente novamente.')
+            print('Qual é o valor atualizado?')
+            while True:
+                try:
+                    valor_atualizado = tratativa_valor(
+                        input('>>R$ '))
+                    break
+                except:
+                    print('Comando inválido. Tente novamente.')
+            print('Deseja alterar o nome da categoria?\n[S]/[N]')
+            while True:
+                try:
+                    alterar_categoria = input('>> ').upper()
+                    break
+                except:
+                    print('Comando inválido. Tente novamente.')
+            while True:
+                try:
+                    if alterar_categoria == 'S':
+                        categoria_atualizada = tratativa_texto(
+                            input('Digite o novo nome da categoria:\n>> '))
+                        break
+                    elif alterar_categoria == 'N':
+                        categoria_atualizada = despesas[despesa_atualizada].get(
+                            'categoria')
+                        break
+                except:
+                    print('Comando inválido. Tente novamente.')
+            print('Deseja alterar o nome dessa despesa?\n[S]/[N]')
+            while True:
+                try:
+                    alterar_item = input('>> ').upper()
+                    break
+                except:
+                    print('Comando inválido. Tente novamente.')
+            while True:
+                if alterar_item == 'S':
+                    item_atualizado = tratativa_texto(
+                    input('Digite o novo nome do item:\n>> '))
+                    break
+                elif alterar_item == 'N':
+                    item_atualizado = despesas[despesa_atualizada].get(
+                    'item')
+                    break
+                else:
+                    print('Comando inválido. Tente novamente.')
+            print('Deseja alterar a data dessa despesa?\n[S]/[N]')
+            while True:
+                try:
+                    alterar_data = input('>> ').upper()
+                    break
+                except:
+                    print('Comando inválido. Tente novamente.')
+            while True:
+                if alterar_data == 'S':
+                    data_atualizada = tratativa_texto(
+                        input('Digite a data atualizada dessa despesa:\n>> '))
+                    break
+                elif alterar_data == 'N':
+                    data_atualizada = despesas[despesa_atualizada].get(
+                        'data')
+                    break
+                else:
+                    print('Comando inválido. Tente novamente.')
+            atualizar_despesa(despesa_atualizada,
+                                valor_atualizado, categoria_atualizada, item_atualizado, data_atualizada)
+            print('Despesa atualizada com sucesso.\n')
         elif opcao_escolhida == '4':
             lista_despesas()
         else:
