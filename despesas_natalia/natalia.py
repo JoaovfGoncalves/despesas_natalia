@@ -404,6 +404,8 @@ if login == 'a' and senha == 'b':
             while True:
                 try:
                     credito = tratativa_valor(input('>>R$ '))
+                    if credito < 0:
+                        raise ValueError
                     break
                 except ValueError:
                     print(
