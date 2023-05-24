@@ -64,12 +64,12 @@ def exportar_despesas():
     arquivo.close()
 
 
-def visualizar_categoria(categoria_desejada):
+def exibir_categoria(categoria_desejada):
     total = 0
     print(
         f'\n# nº - {"Data":^20} - {"Categoria":^20} - {"Item":^20} - {"Valor (R$)":^20}')
     for indice, despesa in enumerate(despesas):
-        if despesa.get('categoria') == str(categoria_desejada):
+        if despesa.get('categoria') == categoria_desejada:
             print(
                 f'# {indice+1} - {despesa["data"]:^20} - {despesa["categoria"]:^20} - '
                 f'{despesa["item"]:^20} - {despesa["valor"]:^20.2f}')
@@ -175,9 +175,9 @@ def verificar_validade_data(data_inserida):
 login = input('Insira seu login:\n')
 senha = input('Insira sua senha:\n')
 
-if login == 'SouANathalia' and senha == 'EuJuro':
-    despesas = []
+if login == 'a' and senha == 'b':
     categorias = []
+    despesas = []
     importar_despesas()
     while True:
         mostrar_menu()
@@ -382,16 +382,17 @@ if login == 'SouANathalia' and senha == 'EuJuro':
                 if visualizar_categoria == 'S':
                     categorias_existentes()
                     try:
-                        categoria_indicada = int(input('Insira a categoria da qual você deseja visualizar os gastos\n'
-                                                       '>> ')) - 1
-                        categoria_desejada = categorias[categoria_indicada]
+                        categoria_indicada = int(
+                            input('Insira a categoria da qual você deseja visualizar os gastos\n>> ')) - 1
+                        if categoria_indicada < 0:
+                            raise IndexError
                     except IndexError:
                         print(
                             '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
                     except ValueError:
                         print(
-                            '//ERRO//\n\nCertifique-se de você digitou um número.\n\n//ERRO//')
-                    visualizar_categoria(categoria_desejada)
+                            '//ERRO//\n\nCertifique-se de que você digitou um número.\n\n//ERRO//')
+                    exibir_categoria(categorias[categoria_indicada])
                     break
                 elif visualizar_categoria == 'N':
                     break
@@ -411,6 +412,8 @@ if login == 'SouANathalia' and senha == 'EuJuro':
             print('\nSaldo adicionado com sucesso.\n')
         elif opcao_escolhida == '7':
             exibir_grafico_categoria()
+        elif opcao_escolhida == '0':
+            break
         else:
             print('Opção inválida.')
 else:
