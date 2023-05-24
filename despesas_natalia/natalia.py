@@ -1,50 +1,40 @@
-import msvcrt
+import datetime
+
+
 def mostrar_menu():
     print('Escolha uma das seguintes opções:')
-    print('[1] Adicionar Despesa\n[2] Remover Despesa\n[3] Atualizar Despesa\n[4] Exibir Despesas\n'
-          '[6] Consultar Saldo\n[7] Adicionar Saldo\n[Esc] Sair')
+    print('[1] Adicionar Despesa\n[2] Excluir Despesa\n[3] Atualizar Despesa\n[4] Exibir Despesas\n'
+          '[5] Consultar Saldo\n[6] Adicionar Saldo\n[Esc] Sair')
 
 
 def adicionar_despesa(valor, categoria, item, data):
-    arq = open('despesas.csv', 'a', encoding='utf8')
+    arquivo = open('despesas.csv', 'a', encoding='utf8')
     despesa = {'valor': valor, 'categoria': categoria,
                'item': item, 'data': data}
     despesas.append(despesa)
-    arq.write(str(despesa)+'\n')
-    arq.close()
+    arquivo.write(str(despesa)+'\n')
+    arquivo.close()
 
 
 def lista_despesas():
     print('\nAqui estão suas despesas listadas:')
     print('----------------------------------')
-    contador = 0
     total = 0
     print(
         f'# nº - {"Data":^20} - {"Categoria":^20} - {"Item":^20} - {"Valor (R$)":^20}')
-    for despesa in despesas:
+    for indice, despesa in enumerate(despesas):
         print(
-            f'# {contador+1} - {despesa["data"]:^20} - {despesa["categoria"]:^20} - '
+            f'# {indice+1} - {despesa["data"]:^20} - {despesa["categoria"]:^20} - '
             f'{despesa["item"]:^20} - {despesa["valor"]:^20.2f}')
         total += despesa['valor']
-        contador += 1
     print(
         f'\nTotal..........................................................................R${total:.2f}')
     print('\n\n')
 
 
-def remover_despesa():
-    while True:
-        lista_despesas()
-        print('Que despesa você gostaria de remover, Nathália?')
-        try:
-            print('Insira o número ao lado do "#" da despesa que você deseja remover.')
-            despesa_removida = int(input('>> ')) - 1
-            del despesas[despesa_removida]
-            exportar_despesas()
-            print('\nDespesa removida com sucesso.')
-            break
-        except:
-            print('Comando inválido. Tente novamente.')
+def excluir_despesa(despesa_excluida):
+    del despesas[despesa_excluida]
+    exportar_despesas()
 
 
 def atualizar_despesa(despesa_atualizada, valor_atualizado, categoria_atualizada, item_atualizado, data_atualizada):
@@ -54,35 +44,62 @@ def atualizar_despesa(despesa_atualizada, valor_atualizado, categoria_atualizada
 
 
 def importar_despesas():
-    arq = open('despesas.csv', 'r', encoding='utf8')
-    dicionarios = arq.readlines()
+    arquivo = open('despesas.csv', 'r', encoding='utf8')
+    dicionarios = arquivo.readlines()
     for dicionario in dicionarios:
         despesas.append(eval(dicionario))
-    arq.close()
+    arquivo.close()
 
 
 def exportar_despesas():
-    arq = open('despesas.csv', 'w', encoding='utf8')
+    arquivo = open('despesas.csv', 'w', encoding='utf8')
     for despesa in despesas:
-        arq.write(str(despesa)+'\n')
-    arq.close()
+        arquivo.write(str(despesa)+'\n')
+    arquivo.close()
 
 
 def despesas_categoria(categoria_desejada):
-    contador = 0
     total = 0
     print(
-        f'# nº - {"Data":^20} - {"Categoria":^20} - {"Item":^20} - {"Valor (R$)":^20}')
-    for despesa in despesas:
+        f'\n# nº - {"Data":^20} - {"Categoria":^20} - {"Item":^20} - {"Valor (R$)":^20}')
+    for indice, despesa in enumerate(despesas):
         if despesa.get('categoria') == categoria_desejada:
             print(
-                f'# {contador+1} - {despesa["data"]:^20} - {despesa["categoria"]:^20} - '
+                f'# {indice+1} - {despesa["data"]:^20} - {despesa["categoria"]:^20} - '
                 f'{despesa["item"]:^20} - {despesa["valor"]:^20.2f}')
             total += despesa['valor']
-            contador += 1
     print(
         f'\nTotal..........................................................................R${total:.2f}')
     print('\n\n')
+
+
+def categorias_existentes():
+    for categoria in despesas:
+        if categoria['categoria'] not in categorias:
+            categorias.append(categoria['categoria'])
+    print('Categorias:')
+    for indice, categoria in enumerate(categorias):
+        print(f'[{indice+1}] {categoria}')
+
+
+def importar_saldo():
+    arquivo = open('saldo.csv', 'r')
+    quantia_saldo = arquivo.read()
+    arquivo.close()
+    return float(quantia_saldo)
+
+
+def adicionar_saldo(credito):
+    arquivo = open('saldo.csv', 'r+')
+    quantia_saldo = arquivo.read().strip()
+    if quantia_saldo:
+        quantia_saldo = float(quantia_saldo)
+    else:
+        quantia_saldo = 0.00
+    novo_saldo = quantia_saldo + credito
+    arquivo.seek(0)
+    arquivo.write(str(novo_saldo))
+    arquivo.close()
 
 
 def tratativa_valor(valor):
@@ -111,6 +128,7 @@ senha = input('Insira sua senha:\n')
 
 if login == 'a' and senha == 'b':
     despesas = []
+    categorias = []
     importar_despesas()
     while True:
         mostrar_menu()
@@ -123,13 +141,35 @@ if login == 'a' and senha == 'b':
                     break
                 except:
                     print('Comando inválido. Tente novamente.')
-            print('Insira a categoria da despesa:')
+            print(
+                '\nEssa despesa se encaixa em uma categoria já cadastrada? [S/N]\n\nConfira na lista:')
             while True:
-                try:
-                    categoria = tratativa_texto(input('>> ').capitalize())
-                    break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                categorias_existentes()
+                categoria_repetitiva = input('>> ').upper()
+                break
+            if categoria_repetitiva == 'S':
+                while True:
+                    print('Indique a categoria que deseja repetir:')
+                    categorias_existentes()
+                    try:
+                        categoria = int(input('>> ')) - 1
+                        categoria = categorias[categoria]
+                        break
+                    except ValueError:
+                        print('//ERRO//\n\nCertifique-se de que você digitou apenas o número dentro dos "[]" '
+                              'da categoria que deseja excluir e tente novamente.\n\n//ERRO//')
+                    except IndexError:
+                        print(
+                            '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
+            elif categoria_repetitiva == 'N':
+                while True:
+                    print('Insira a categoria da despesa:')
+                    try:
+                        categoria = tratativa_texto(
+                            input('>> ').capitalize())
+                        break
+                    except:
+                        print('Comando inválido. Tente novamente.')
             print('Insira o item da despesa:')
             while True:
                 try:
@@ -147,7 +187,23 @@ if login == 'a' and senha == 'b':
             adicionar_despesa(valor, categoria, item, data)
             print('\nTransação adicionada com sucesso.\n')
         elif opcao_escolhida == '2':
-            remover_despesa()
+            while True:
+                lista_despesas()
+                print('Que despesa você gostaria de excluir, Nathália?')
+                print(
+                    'Insira o número ao lado do "#" da despesa que você deseja excluir.')
+                try:
+                    despesa_excluida = int(input('>> ')) - 1
+                    adicionar_saldo(despesas[despesa_excluida].get('valor'))
+                    excluir_despesa(despesa_excluida)
+                    break
+                except ValueError:
+                    print('//ERRO//\n\nCertifique-se de que você digitou apenas o número ao lado do "#" da despesa que deseja excluir'
+                          'e tente novamente.\n\n//ERRO//')
+                except IndexError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
+            print('\nDespesa excluída com sucesso.\n')
         elif opcao_escolhida == '3':
             lista_despesas()
             print('Que despesa você gostaria de atualizar, Nathália?')
@@ -156,8 +212,12 @@ if login == 'a' and senha == 'b':
                     despesa_atualizada = int(input(
                         'Insira o número ao lado do "#" da despesa que você deseja atualizar.\n>> '))-1
                     break
+                except ValueError:
+                    print('//ERRO//\n\nCertifique-se de que você digitou apenas o número ao lado do "#" da despesa que deseja excluir'
+                          'e tente novamente.\n\n//ERRO//')
                 except:
-                    print('Comando inválido. Tente novamente.')
+                    print(
+                        '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
             print('Deseja atualizar o valor?\n[S/N]')
             while True:
                 try:
@@ -248,14 +308,31 @@ if login == 'a' and senha == 'b':
             while True:
                 try:
                     if visualizar_categoria == 'S':
-                        categoria_desejada = input('Insira a categoria da qual você deseja visualizar os gastos\n'
-                                                   '>> ').capitalize()
+                        categorias_existentes()
+                        categoria_desejada = int(input('Insira a categoria da qual você deseja visualizar os gastos\n'
+                                                       '>> ')) - 1
+                        categoria_desejada = categorias[categoria_desejada]
                         despesas_categoria(categoria_desejada)
                         break
                     elif visualizar_categoria == 'N':
                         break
                 except:
                     print('Comando inválido. Tente Novamente')
+        elif opcao_escolhida == '5':
+            saldo = importar_saldo()
+            print(f'\n\nSeu saldo está em R${saldo}\n\n')
+        elif opcao_escolhida == '6':
+            print('Insira quanto será adicionado ao seu saldo:')
+            while True:
+                try:
+                    credito = float(input('>>R$ '))
+                    break
+                except ValueError:
+                    print(
+                        'Certifique-se que um valor válido foi inserido.\nModelo:R$ NN.nn')
+            adicionar_saldo(credito)
+            print('\nSaldo adicionado com sucesso.\n')
+
         else:
             print('Comando inválido. Tente novamente.')
 else:
