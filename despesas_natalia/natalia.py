@@ -89,6 +89,19 @@ def importar_saldo():
     return float(quantia_saldo)
 
 
+def retirar_saldo(debito):
+    arquivo = open('saldo.csv', 'r+')
+    quantia_saldo = arquivo.read().strip()
+    if quantia_saldo:
+        quantia_saldo = float(quantia_saldo)
+    else:
+        quantia_saldo = 0.00
+    novo_saldo = quantia_saldo - debito
+    arquivo.seek(0)
+    arquivo.write(str(novo_saldo))
+    arquivo.close()
+
+
 def adicionar_saldo(credito):
     arquivo = open('saldo.csv', 'r+')
     quantia_saldo = arquivo.read().strip()
@@ -142,14 +155,14 @@ if login == 'a' and senha == 'b':
                 except:
                     print('Comando inválido. Tente novamente.')
             print(
-                '\nEssa despesa se encaixa em uma categoria já cadastrada? [S/N]\n\nConfira na lista:')
+                '\nEssa despesa se encaixa em uma categoria já cadastrada? [S/N]\n\nConfira na lista:\n')
             while True:
                 categorias_existentes()
                 categoria_repetitiva = input('>> ').upper()
                 break
             if categoria_repetitiva == 'S':
                 while True:
-                    print('Indique a categoria que deseja repetir:')
+                    print('\nIndique a categoria que deseja repetir:\n')
                     categorias_existentes()
                     try:
                         categoria = int(input('>> ')) - 1
@@ -163,7 +176,7 @@ if login == 'a' and senha == 'b':
                             '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
             elif categoria_repetitiva == 'N':
                 while True:
-                    print('Insira a categoria da despesa:')
+                    print('\nInsira a categoria da despesa:')
                     try:
                         categoria = tratativa_texto(
                             input('>> ').capitalize())
@@ -185,6 +198,7 @@ if login == 'a' and senha == 'b':
                 except:
                     print('Comando inválido. Tente novamente.')
             adicionar_despesa(valor, categoria, item, data)
+            retirar_saldo(despesas[-1].get('valor'))
             print('\nTransação adicionada com sucesso.\n')
         elif opcao_escolhida == '2':
             while True:
@@ -292,8 +306,10 @@ if login == 'a' and senha == 'b':
                     break
                 else:
                     print('Comando inválido. Tente novamente.')
+            retirar_saldo(despesas[despesa_atualizada].get('valor'))
             atualizar_despesa(despesa_atualizada,
                               valor_atualizado, categoria_atualizada, item_atualizado, data_atualizada)
+            adicionar_saldo(despesas[despesa_atualizada].get('valor'))
             print('\nDespesa atualizada com sucesso.\n')
         elif opcao_escolhida == '4':
             lista_despesas()
