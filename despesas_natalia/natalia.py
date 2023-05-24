@@ -42,7 +42,7 @@ def lista_despesas():
             f'{despesa["item"]:^25} - {despesa["valor"]:^25.2f}')
         total += despesa['valor']
     print(
-        f'\nTotal.............................................................................R${total:.2f}')
+        f'\nTotal Gasto.............................................................................R${total:.2f}')
     print('\n\n')
 
 
