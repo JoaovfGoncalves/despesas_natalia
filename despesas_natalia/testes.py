@@ -1,2 +1,3 @@
+lista=[]
 
-print(help(KeyError))
+print(len(lista))
