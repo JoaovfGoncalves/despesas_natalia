@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 
 def mostrar_menu():
@@ -21,11 +21,11 @@ def lista_despesas():
     print('----------------------------------')
     total = 0
     print(
-        f'# nº - {"Data":^20} - {"Categoria":^20} - {"Item":^20} - {"Valor (R$)":^20}')
+        f'# nº - {"Data":^25} - {"Categoria":^25} - {"Item":^25} - {"Valor (R$)":^25}')
     for indice, despesa in enumerate(despesas):
         print(
-            f'# {indice+1} - {despesa["data"]:^20} - {despesa["categoria"]:^20} - '
-            f'{despesa["item"]:^20} - {despesa["valor"]:^20.2f}')
+            f'# {indice+1} - {despesa["data"]:^25} - {despesa["categoria"]:^25} - '
+            f'{despesa["item"]:^25} - {despesa["valor"]:^25.2f}')
         total += despesa['valor']
     print(
         f'\nTotal..........................................................................R${total:.2f}')
@@ -95,7 +95,7 @@ def retirar_saldo(debito):
     if quantia_saldo:
         quantia_saldo = float(quantia_saldo)
     else:
-        quantia_saldo = 0.00
+        quantia_saldo = 0
     novo_saldo = quantia_saldo - debito
     arquivo.seek(0)
     arquivo.write(str(novo_saldo))
@@ -108,7 +108,7 @@ def adicionar_saldo(credito):
     if quantia_saldo:
         quantia_saldo = float(quantia_saldo)
     else:
-        quantia_saldo = 0.00
+        quantia_saldo = 0
     novo_saldo = quantia_saldo + credito
     arquivo.seek(0)
     arquivo.write(str(novo_saldo))
@@ -190,14 +190,8 @@ if login == 'a' and senha == 'b':
                     break
                 except:
                     print('Comando inválido. Tente novamente.')
-            print('Insira a data da despesa:')
-            while True:
-                try:
-                    data = tratativa_texto(input('>> '))
-                    break
-                except:
-                    print('Comando inválido. Tente novamente.')
-            adicionar_despesa(valor, categoria, item, data)
+            adicionar_despesa(valor, categoria, item,
+                              datetime.now().strftime("%d/%m/%Y"))
             retirar_saldo(despesas[-1].get('valor'))
             print('\nTransação adicionada com sucesso.\n')
         elif opcao_escolhida == '2':
@@ -225,13 +219,12 @@ if login == 'a' and senha == 'b':
                 try:
                     despesa_atualizada = int(input(
                         'Insira o número ao lado do "#" da despesa que você deseja atualizar.\n>> '))-1
+                    if despesa_atualizada < 0 or despesa_atualizada >= len(despesas):
+                        raise ValueError
                     break
                 except ValueError:
                     print('//ERRO//\n\nCertifique-se de que você digitou apenas o número ao lado do "#" da despesa que deseja excluir'
                           'e tente novamente.\n\n//ERRO//')
-                except:
-                    print(
-                        '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
             print('Deseja atualizar o valor?\n[S/N]')
             while True:
                 try:
@@ -240,17 +233,18 @@ if login == 'a' and senha == 'b':
                 except:
                     print('Comando inválido. Tente novamente.')
             while True:
-                try:
-                    if alterar_valor == 'S':
+                if alterar_valor == 'S':
+                    try:
                         valor_atualizado = tratativa_valor(
                             input('Digite o novo valor:\n>>R$ '))
                         break
-                    elif alterar_valor == 'N':
-                        valor_atualizado = despesas[despesa_atualizada].get(
-                            'valor')
-                        break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                    except ValueError:
+                        print(
+                            '\n//Certifique-se de que está inserindo o valor corretamente (Modelo R$ NN.nn).//\n')
+                elif alterar_valor == 'N':
+                    valor_atualizado = despesas[despesa_atualizada].get(
+                        'valor')
+                    break
             print('Deseja alterar o nome da categoria?\n[S/N]')
             while True:
                 try:
