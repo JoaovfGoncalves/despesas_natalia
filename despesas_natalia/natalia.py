@@ -46,8 +46,11 @@ def atualizar_despesa(despesa_atualizada, valor_atualizado, categoria_atualizada
 def importar_despesas():
     arquivo = open('despesas.csv', 'r', encoding='utf8')
     dicionarios = arquivo.readlines()
-    for dicionario in dicionarios:
-        despesas.append(eval(dicionario))
+    if len(dicionarios) > 1:
+        for dicionario in dicionarios:
+            despesas.append(eval(dicionario))
+    else:
+        return None
     arquivo.close()
 
 
@@ -152,14 +155,21 @@ if login == 'a' and senha == 'b':
                 try:
                     valor = tratativa_valor(input('>>R$ '))
                     break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que está inserindo o valor corretamente (Modelo R$ NN.nn).\n\n//ERRO//')
             print(
                 '\nEssa despesa se encaixa em uma categoria já cadastrada? [S/N]\n\nConfira na lista:\n')
             while True:
                 categorias_existentes()
-                categoria_repetitiva = input('>> ').upper()
-                break
+                try:
+                    categoria_repetitiva = input('>> ').upper()
+                    if categoria_repetitiva not in ['S', 'N']:
+                        raise ValueError
+                    break
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que você digitou apenas S ou N.\n\n//ERRO//')
             if categoria_repetitiva == 'S':
                 while True:
                     print('\nIndique a categoria que deseja repetir:\n')
@@ -181,14 +191,14 @@ if login == 'a' and senha == 'b':
                         categoria = tratativa_texto(
                             input('>> ').capitalize())
                         break
-                    except:
+                    except EOFError:
                         print('Comando inválido. Tente novamente.')
             print('Insira o item da despesa:')
             while True:
                 try:
                     item = tratativa_texto(input('>> ').capitalize())
                     break
-                except:
+                except EOFError:
                     print('Comando inválido. Tente novamente.')
             adicionar_despesa(valor, categoria, item,
                               datetime.now().strftime("%d/%m/%Y"))
@@ -220,18 +230,21 @@ if login == 'a' and senha == 'b':
                     despesa_atualizada = int(input(
                         'Insira o número ao lado do "#" da despesa que você deseja atualizar.\n>> '))-1
                     if despesa_atualizada < 0 or despesa_atualizada >= len(despesas):
-                        raise ValueError
+                        raise IndexError
                     break
-                except ValueError:
+                except IndexError:
                     print('//ERRO//\n\nCertifique-se de que você digitou apenas o número ao lado do "#" da despesa que deseja excluir'
                           'e tente novamente.\n\n//ERRO//')
             print('Deseja atualizar o valor?\n[S/N]')
             while True:
                 try:
                     alterar_valor = input('>> ').upper()
+                    if alterar_valor not in ['S', 'N']:
+                        raise ValueError
                     break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que você digitou apenas S ou N.\n\n//ERRO//')
             while True:
                 if alterar_valor == 'S':
                     try:
@@ -249,46 +262,50 @@ if login == 'a' and senha == 'b':
             while True:
                 try:
                     alterar_categoria = input('>> ').upper()
+                    if alterar_categoria not in ['S', 'N']:
+                        raise ValueError
                     break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que você digitou apenas S ou N.\n\n//ERRO//')
             while True:
-                try:
-                    if alterar_categoria == 'S':
-                        categoria_atualizada = tratativa_texto(
-                            input('Digite o novo nome da categoria:\n>> '))
-                        break
-                    elif alterar_categoria == 'N':
-                        categoria_atualizada = despesas[despesa_atualizada].get(
-                            'categoria')
-                        break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                if alterar_categoria == 'S':
+                    categoria_atualizada = tratativa_texto(
+                        input('Digite o novo nome da categoria:\n>> '))
+                    break
+                if alterar_categoria == 'N':
+                    categoria_atualizada = despesas[despesa_atualizada].get(
+                        'categoria')
+                    break
             print('Deseja alterar o nome do item dessa despesa?\n[S/N]')
             while True:
                 try:
                     alterar_item = input('>> ').upper()
+                    if alterar_item.isdigit() or alterar_item not in ['S', 'N']:
+                        raise ValueError
                     break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que você digitou apenas S ou N.\n\n//ERRO//')
             while True:
                 if alterar_item == 'S':
                     item_atualizado = tratativa_texto(
                         input('Digite o novo nome do item:\n>> '))
                     break
-                elif alterar_item == 'N':
+                if alterar_item == 'N':
                     item_atualizado = despesas[despesa_atualizada].get(
                         'item')
                     break
-                else:
-                    print('Comando inválido. Tente novamente.')
             print('Deseja alterar a data dessa despesa?\n[S/N]')
             while True:
                 try:
                     alterar_data = input('>> ').upper()
+                    if alterar_data not in ['S', 'N']:
+                        raise ValueError
                     break
-                except:
-                    print('Comando inválido. Tente novamente.')
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que você digitou apenas S ou N.\n\n//ERRO//')
             while True:
                 if alterar_data == 'S':
                     data_atualizada = tratativa_texto(
@@ -298,8 +315,6 @@ if login == 'a' and senha == 'b':
                     data_atualizada = despesas[despesa_atualizada].get(
                         'data')
                     break
-                else:
-                    print('Comando inválido. Tente novamente.')
             retirar_saldo(despesas[despesa_atualizada].get('valor'))
             atualizar_despesa(despesa_atualizada,
                               valor_atualizado, categoria_atualizada, item_atualizado, data_atualizada)
@@ -312,22 +327,26 @@ if login == 'a' and senha == 'b':
             while True:
                 try:
                     visualizar_categoria = input('>> ').upper()
+                    if visualizar_categoria not in ['S', 'N']:
+                        raise ValueError
                     break
-                except:
-                    print('Comando inválido. Tente Novamente')
+                except ValueError:
+                    print(
+                        '//ERRO//\n\nCertifique-se de que você digitou apenas S ou N.\n\n//ERRO//')
             while True:
-                try:
-                    if visualizar_categoria == 'S':
-                        categorias_existentes()
+                if visualizar_categoria == 'S':
+                    categorias_existentes()
+                    try:
                         categoria_desejada = int(input('Insira a categoria da qual você deseja visualizar os gastos\n'
                                                        '>> ')) - 1
                         categoria_desejada = categorias[categoria_desejada]
-                        despesas_categoria(categoria_desejada)
-                        break
-                    elif visualizar_categoria == 'N':
-                        break
-                except:
-                    print('Comando inválido. Tente Novamente')
+                    except IndexError:
+                        print(
+                            '//ERRO//\n\nCertifique-se de que o número digitado consta na lista.\n\n//ERRO//')
+                    despesas_categoria(categoria_desejada)
+                    break
+                elif visualizar_categoria == 'N':
+                    break
         elif opcao_escolhida == '5':
             saldo = importar_saldo()
             print(f'\n\nSeu saldo está em R${saldo}\n\n')

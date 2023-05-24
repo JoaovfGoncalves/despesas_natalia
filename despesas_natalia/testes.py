@@ -1,3 +1,2 @@
-import msvcrt
-tecla=input(msvcrt.getch())
-print(help(msvcrt))
+
+print(help(KeyError))
