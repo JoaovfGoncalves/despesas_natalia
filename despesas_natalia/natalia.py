@@ -38,10 +38,10 @@ def lista_despesas():
     print('----------------------------------')
     total = 0
     print(
-        f'# nº - {"Data":^25} - {"Categoria":^25} - {"Item":^25} - {"Valor (R$)":^25}')
+        f'# {"nº":<5} - {"Data":^25} - {"Categoria":^25} - {"Item":^25} - {"Valor (R$)":^25}')
     for indice, despesa in enumerate(despesas):
         print(
-            f'# {indice+1} - {despesa["data"]:^25} - {despesa["categoria"]:^25} - '
+            f'# {indice+1:<5} - {despesa["data"]:^25} - {despesa["categoria"]:^25} - '
             f'{despesa["item"]:^25} - {despesa["valor"]:^25.2f}')
         total += despesa['valor']
     print(
@@ -220,7 +220,7 @@ if login == 'SouANathalia' and senha == 'EuJuro':
                     print(
                         '//ERRO//\n\nCertifique-se de que está inserindo o valor corretamente (Modelo R$ NN.nn).\n\n//ERRO//')
             print(
-                '\nEssa despesa se encaixa em uma categoria já cadastrada? [S/N]\n\nConfira na lista:\n')
+                '\nEssa despesa se encaixa em uma categoria já cadastrada? [S/N]\n\nConfira na lista abaixo:')
             while True:
                 categorias_existentes()
                 try:
