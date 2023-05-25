@@ -14,9 +14,12 @@ def adicionar_despesa(valor, categoria, item, data):
     despesa = {'valor': valor, 'categoria': categoria,
                'item': item, 'data': data}
     despesas.append(despesa)
-    arquivo = open('despesas.csv', 'a', encoding='utf8')
-    arquivo.write(str(despesa)+'\n')
-    arquivo.close()
+    try:
+        arquivo = open('despesas.csv', 'a', encoding='utf8')
+        arquivo.write(str(despesa)+'\n')
+        arquivo.close()
+    except FileNotFoundError:
+        print('//ERRO//\n\nCertifique-se que o caminho do arquivo está devidamente acessível\n\n//ERRO//')
 
 
 def excluir_despesa(despesa_excluida):
@@ -47,21 +50,27 @@ def lista_despesas():
 
 
 def importar_despesas():
-    arquivo = open('despesas.csv', 'r', encoding='utf8')
-    dicionarios = arquivo.readlines()
-    if dicionarios == []:
-        pass
-    else:
-        for dicionario in dicionarios:
-            despesas.append(eval(dicionario))
-    arquivo.close()
+    try:
+        arquivo = open('despesas.csv', 'r', encoding='utf8')
+        dicionarios = arquivo.readlines()
+        if dicionarios == []:
+            pass
+        else:
+            for dicionario in dicionarios:
+                despesas.append(eval(dicionario))
+        arquivo.close()
+    except FileNotFoundError:
+        print('//ERRO//\n\nCertifique-se de que o caminho do arquivo está devidamente acessível\n\n//ERRO//')
 
 
 def exportar_despesas():
-    arquivo = open('despesas.csv', 'w', encoding='utf8')
-    for despesa in despesas:
-        arquivo.write(str(despesa)+'\n')
-    arquivo.close()
+    try:
+        arquivo = open('despesas.csv', 'w', encoding='utf8')
+        for despesa in despesas:
+            arquivo.write(str(despesa)+'\n')
+        arquivo.close()
+    except FileNotFoundError:
+        print('//ERRO//\n\nCertifique-se que o caminho do arquivo está devidamente acessível\n\n//ERRO//')
 
 
 def exibir_categoria(categoria_desejada):
@@ -89,43 +98,52 @@ def categorias_existentes():
 
 
 def importar_saldo():
-    arquivo = open('saldo.csv', 'r+')
-    quantia_saldo = arquivo.read().strip()
-    if quantia_saldo:
-        quantia_saldo = float(quantia_saldo)
-    else:
-        quantia_saldo = 0.0
-        arquivo.write(str(quantia_saldo))
-    arquivo.close()
-    return quantia_saldo
+    try:
+        arquivo = open('saldo.csv', 'r+')
+        quantia_saldo = arquivo.read().strip()
+        if quantia_saldo:
+            quantia_saldo = float(quantia_saldo)
+        else:
+            quantia_saldo = 0.0
+            arquivo.write(str(quantia_saldo))
+        arquivo.close()
+        return quantia_saldo
+    except FileNotFoundError:
+        print('//ERRO//\n\nCertifique-se que o caminho do arquivo está devidamente acessível\n\n//ERRO//')
 
 
 def subtrair_saldo(debito):
-    arquivo = open('saldo.csv', 'r+')
-    quantia_saldo = arquivo.read().strip()
-    if quantia_saldo:
-        quantia_saldo = float(quantia_saldo)
-    else:
-        quantia_saldo = 0.0
-        arquivo.write(str(quantia_saldo))
-    novo_saldo = float(quantia_saldo) - debito
-    arquivo.seek(0)
-    arquivo.write(str(novo_saldo))
-    arquivo.close()
+    try:
+        arquivo = open('saldo.csv', 'r+')
+        quantia_saldo = arquivo.read().strip()
+        if quantia_saldo:
+            quantia_saldo = float(quantia_saldo)
+        else:
+            quantia_saldo = 0.0
+            arquivo.write(str(quantia_saldo))
+        novo_saldo = float(quantia_saldo) - debito
+        arquivo.seek(0)
+        arquivo.write(str(novo_saldo))
+        arquivo.close()
+    except FileNotFoundError:
+        print('//ERRO//\n\nCertifique-se que o caminho do arquivo está devidamente acessível\n\n//ERRO//')
 
 
 def adicionar_saldo(credito):
-    arquivo = open('saldo.csv', 'r+')
-    quantia_saldo = arquivo.read().strip()
-    if quantia_saldo:
-        quantia_saldo = float(quantia_saldo)
-    else:
-        quantia_saldo = 0.0
-        arquivo.write(str(quantia_saldo))
-    novo_saldo = float(quantia_saldo) + credito
-    arquivo.seek(0)
-    arquivo.write(str(novo_saldo))
-    arquivo.close()
+    try:
+        arquivo = open('saldo.csv', 'r+')
+        quantia_saldo = arquivo.read().strip()
+        if quantia_saldo:
+            quantia_saldo = float(quantia_saldo)
+        else:
+            quantia_saldo = 0.0
+            arquivo.write(str(quantia_saldo))
+        novo_saldo = float(quantia_saldo) + credito
+        arquivo.seek(0)
+        arquivo.write(str(novo_saldo))
+        arquivo.close()
+    except FileNotFoundError:
+        print('//ERRO//\n\nCertifique-se que o caminho do arquivo está devidamente acessível\n\n//ERRO//')
 
 
 def exibir_grafico_categoria():
@@ -248,7 +266,7 @@ if login == 'SouANathalia' and senha == 'EuJuro':
             adicionar_despesa(valor, categoria, item,
                               datetime.now().strftime("%d/%m/%Y"))
             subtrair_saldo(despesas[-1].get('valor'))
-            print('\nTransação adicionada com sucesso.\n')
+            print('\nDespesa adicionada com sucesso.\n')
         elif opcao_escolhida == '2':
             while True:
                 lista_despesas()
