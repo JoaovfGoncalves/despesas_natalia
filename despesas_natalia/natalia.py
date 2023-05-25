@@ -103,6 +103,11 @@ def importar_saldo():
 def subtrair_saldo(debito):
     arquivo = open('saldo.csv', 'r+')
     quantia_saldo = arquivo.read().strip()
+    if quantia_saldo:
+        quantia_saldo = float(quantia_saldo)
+    else:
+        quantia_saldo = 0.0
+        arquivo.write(str(quantia_saldo))
     novo_saldo = float(quantia_saldo) - debito
     arquivo.seek(0)
     arquivo.write(str(novo_saldo))
@@ -112,6 +117,11 @@ def subtrair_saldo(debito):
 def adicionar_saldo(credito):
     arquivo = open('saldo.csv', 'r+')
     quantia_saldo = arquivo.read().strip()
+    if quantia_saldo:
+        quantia_saldo = float(quantia_saldo)
+    else:
+        quantia_saldo = 0.0
+        arquivo.write(str(quantia_saldo))
     novo_saldo = float(quantia_saldo) + credito
     arquivo.seek(0)
     arquivo.write(str(novo_saldo))
@@ -311,7 +321,7 @@ if login == 'a' and senha == 'b':
             while True:
                 if alterar_categoria == 'S':
                     categoria_atualizada = tratativa_texto(
-                        input('Digite o novo nome da categoria:\n>> '))
+                        input('Digite o novo nome da categoria:\n>> ').capitalize())
                     break
                 if alterar_categoria == 'N':
                     categoria_atualizada = despesas[despesa_atualizada].get(
@@ -330,7 +340,7 @@ if login == 'a' and senha == 'b':
             while True:
                 if alterar_item == 'S':
                     item_atualizado = tratativa_texto(
-                        input('Digite o novo nome do item:\n>> '))
+                        input('Digite o novo nome do item:\n>> ').capitalize())
                     break
                 if alterar_item == 'N':
                     item_atualizado = despesas[despesa_atualizada].get(
