@@ -185,7 +185,7 @@ def verificar_validade_data(data_inserida):
 login = input('Insira seu login:\n')
 senha = input('Insira sua senha:\n')
 
-if login == 'a' and senha == 'b':
+if login == 'SouANathalia' and senha == 'EuJuro':
     categorias = []
     despesas = []
     importar_despesas()
